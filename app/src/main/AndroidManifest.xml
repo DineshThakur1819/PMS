@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-<!--    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />-->
 
     <application
         android:allowBackup="true"
@@ -15,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PMS">
+        <activity android:name=".RequestStructureActivity"></activity>
         <activity android:name=".client.ClientActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

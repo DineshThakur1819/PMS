@@ -26,11 +26,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Listen Socket" />
+
         <Button
             android:id="@+id/dummy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Send Msg" />
+
         <TextView
             android:id="@+id/display"
             android:layout_width="match_parent"

@@ -11,7 +11,7 @@ import java.net.SocketException;
 public class EchoServer extends Thread {
 
     private static final String TAG = "EchoServer";
-    private static final int PORT = 11001;
+    private static final int PORT = 11000;
     private DatagramSocket socket;
     private boolean running;
     private byte[] buf = new byte[256];

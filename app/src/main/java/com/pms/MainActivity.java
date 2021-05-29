@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void messageReceived(String message) {
 
-                binding.display.setText("Rec : " + message);
+                binding.display.setText(String.format("Rec : %s", message));
 
             }
         }, getApplication(), ip);
