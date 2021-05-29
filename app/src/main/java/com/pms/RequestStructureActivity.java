@@ -2,7 +2,9 @@ package com.pms;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.util.Log;
 
 import com.pms.pmsmodel.CommonUtils;
@@ -15,10 +17,15 @@ import java.util.Date;
 
 public class RequestStructureActivity extends AppCompatActivity {
 
+    String ipAddress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_structure);
+
+        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        ipAddress = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
 
         PMSMessage pmsMessage = new PMSMessage(PMSConstants.PMSMessageType.TERMINAL_TEST, PMSConstants.RequestResponseType.RESPONSE, "00", false);
 
@@ -53,7 +60,7 @@ public class RequestStructureActivity extends AppCompatActivity {
         String version = "EVO_12.0.0.3";
         pmsMessage.addField(new PMSField("VR", version));
 
-        String ipAddress = "192.168.1.1";
+//        String ipAddress = "192.168.1.1";
         String ipPOrt = "11002";
         pmsMessage.addField(new PMSField("IA", ipAddress));
         pmsMessage.addField(new PMSField("IP", ipPOrt));
