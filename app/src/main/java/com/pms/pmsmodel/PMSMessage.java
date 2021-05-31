@@ -1,10 +1,14 @@
 package com.pms.pmsmodel;
 
+import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class PMSMessage {
+
+    private static final String TAG = "PMSMessage";
 
     ArrayList<PMSField> fields = null;
 
@@ -38,14 +42,30 @@ public class PMSMessage {
             for (PMSField field : fields) {
                 bos.write(field.getData());
             }
+
+
+
             bos.write(PMSConstants.ETX);
 
+            String length = String.format("%04d", bos.toByteArray().length);
+
             bos.write(PMSUtil.calculateLRC(bos.toByteArray()));
+
 
             byte[] data = bos.toByteArray();
             bos.reset();
 
+//            Log.e(TAG, "getMessage: " + data.length);
+
+
             bos.write(PMSConstants.STX);
+
+            bos.write(CommonUtils.hexStringToByteArray(length));
+//            bos.write(PMSConstants.SP);
+//            bos.write(PMSConstants.LL);
+////            bos.write(PMSConstants.SP);
+//            bos.write(PMSConstants.LL1);
+//            bos.write(PMSConstants.SP);
             bos.write(data);
 
 

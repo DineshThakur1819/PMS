@@ -3,7 +3,9 @@ package com.pms;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.util.Log;
@@ -15,6 +17,7 @@ import com.pms.pmsmodel.PMSConstants;
 import com.pms.pmsmodel.PMSField;
 import com.pms.pmsmodel.PMSMessage;
 
+import java.net.Inet4Address;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -68,13 +71,19 @@ public class RequestStructureActivity extends AppCompatActivity {
         String version = "EVO_12.0.0.3";
         pmsMessage.addField(new PMSField("VR", version));
 
-        ipAddress = "192.168.43.1";
+        ipAddress = "192.168.43.3";
         String ipPOrt = "11002";
         pmsMessage.addField(new PMSField("IA", ipAddress));
         pmsMessage.addField(new PMSField("IP", ipPOrt));
 
-        String msg = CommonUtils.byteArrayToHexString(pmsMessage.getMessage());
+//        byte[] m = pmsMessage.getMessage();
+//
+//        String c = String.valueOf(CommonUtils.calculateLrc(m, m.length));
 
+        byte[] byteMsg = pmsMessage.getMessage();
+        String msg = CommonUtils.byteArrayToHexString(byteMsg);
+//
+//        Inet4Address inet4Address=new Inet4Address()
 
         ClientThread clientThread = new ClientThread();
         new Thread(clientThread).start();
@@ -87,7 +96,8 @@ public class RequestStructureActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d("PMS Message:", msg);
-                clientThread.sendMessage(msg);
+                clientThread.sendMessage(byteMsg);
+
             }
         });
 
