@@ -1,12 +1,15 @@
 package com.pms;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.format.Formatter;
 import android.util.Log;
+import android.view.View;
 
+import com.pms.databinding.ActivityRequestStructureBinding;
 import com.pms.pmsmodel.CommonUtils;
 import com.pms.pmsmodel.PMSConstants;
 import com.pms.pmsmodel.PMSField;
@@ -19,10 +22,15 @@ public class RequestStructureActivity extends AppCompatActivity {
 
     String ipAddress;
 
+    private ActivityRequestStructureBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_request_structure);
+//        setContentView(R.layout.activity_request_structure);
+
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_request_structure);
 
         WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         ipAddress = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
@@ -37,9 +45,9 @@ public class RequestStructureActivity extends AppCompatActivity {
         e.setField("EA", StringUtility::padRight(tid, 8, ' ') + StringUtility::padRight(mid, 15, ' '));
         e.setField("VR", m_version);*/
 
-        pmsMessage.addField(new PMSField("02", "ECR COMMS - OK"));
+//        pmsMessage.addField(new PMSField("02", "ECR COMMS - OK"));
 
-        SimpleDateFormat sdf = new SimpleDateFormat("YYMMdd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd");
         Date date = new Date();
         String strDate = sdf.format(date);
 
@@ -60,11 +68,29 @@ public class RequestStructureActivity extends AppCompatActivity {
         String version = "EVO_12.0.0.3";
         pmsMessage.addField(new PMSField("VR", version));
 
-//        String ipAddress = "192.168.1.1";
+        ipAddress = "192.168.43.1";
         String ipPOrt = "11002";
         pmsMessage.addField(new PMSField("IA", ipAddress));
         pmsMessage.addField(new PMSField("IP", ipPOrt));
 
-        Log.d("PMS Message:", CommonUtils.byteArrayToHexString(pmsMessage.getMessage()));
+        String msg = CommonUtils.byteArrayToHexString(pmsMessage.getMessage());
+
+
+        ClientThread clientThread = new ClientThread();
+        new Thread(clientThread).start();
+
+        EchoServer echoServer = new EchoServer();
+
+        binding.listenUDPServer.setOnClickListener(v -> echoServer.start());
+
+        binding.sendMsgToServer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("PMS Message:", msg);
+                clientThread.sendMessage(msg);
+            }
+        });
+
+
     }
 }

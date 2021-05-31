@@ -18,7 +18,6 @@ public class ClientThread implements Runnable {
     private static final String SERVER_IP ="192.168.43.186" ;
     private static final int SERVERPORT =11000 ;
     private Socket socket;
-    private BufferedReader input;
 
     @Override
     public void run() {
@@ -29,7 +28,7 @@ public class ClientThread implements Runnable {
 
             while (!Thread.currentThread().isInterrupted()) {
 
-                this.input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String message = input.readLine();
                 if (null == message || "Disconnect".contentEquals(message)) {
                     Thread.interrupted();
