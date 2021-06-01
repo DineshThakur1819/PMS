@@ -42,9 +42,6 @@ public class PMSMessage {
             for (PMSField field : fields) {
                 bos.write(field.getData());
             }
-
-
-
             bos.write(PMSConstants.ETX);
 
             String length = String.format("%04d", bos.toByteArray().length);
@@ -55,17 +52,8 @@ public class PMSMessage {
             byte[] data = bos.toByteArray();
             bos.reset();
 
-//            Log.e(TAG, "getMessage: " + data.length);
-
-
             bos.write(PMSConstants.STX);
-
             bos.write(CommonUtils.hexStringToByteArray(length));
-//            bos.write(PMSConstants.SP);
-//            bos.write(PMSConstants.LL);
-////            bos.write(PMSConstants.SP);
-//            bos.write(PMSConstants.LL1);
-//            bos.write(PMSConstants.SP);
             bos.write(data);
 
 
