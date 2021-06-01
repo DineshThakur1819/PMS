@@ -16,16 +16,35 @@ import com.pms.pmsmodel.CommonUtils;
 import com.pms.pmsmodel.PMSConstants;
 import com.pms.pmsmodel.PMSField;
 import com.pms.pmsmodel.PMSMessage;
+import com.pms.pmsmodel.PMSUtil;
 
+import java.io.OutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.ObservableSource;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class RequestStructureActivity extends AppCompatActivity {
 
     String ipAddress;
 
     private ActivityRequestStructureBinding binding;
+    private static final String TAG = "RequestStructureActivit";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +90,8 @@ public class RequestStructureActivity extends AppCompatActivity {
         String version = "EVO_12.0.0.3";
         pmsMessage.addField(new PMSField("VR", version));
 
-        ipAddress = "192.168.43.3";
-        String ipPOrt = "11002";
+        ipAddress = "192.168.43.5";
+        String ipPOrt = "11005";
         pmsMessage.addField(new PMSField("IA", ipAddress));
         pmsMessage.addField(new PMSField("IP", ipPOrt));
 
@@ -88,9 +107,11 @@ public class RequestStructureActivity extends AppCompatActivity {
         ClientThread clientThread = new ClientThread();
         new Thread(clientThread).start();
 
-        EchoServer echoServer = new EchoServer();
 
-        binding.listenUDPServer.setOnClickListener(v -> echoServer.start());
+        binding.listenUDPServer.setOnClickListener(v -> {
+            ListenUDP echoServer = new ListenUDP();
+            echoServer.start();
+        });
 
         binding.sendMsgToServer.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +122,73 @@ public class RequestStructureActivity extends AppCompatActivity {
             }
         });
 
+
+        binding.createTerminal.setOnClickListener(v -> createTerminal());
+
+
+    }
+
+    private void createTerminal() {
+
+        Observable.create((ObservableOnSubscribe<String>) emitter -> {
+
+            DatagramSocket socket = new DatagramSocket(PMSUtil.DEFAULT_UDP_PORT);
+            byte[] buf = new byte[256];
+            DatagramPacket packet = new DatagramPacket(buf, buf.length);
+            socket.receive(packet);
+            String received
+                    = new String(packet.getData(), 0, packet.getLength());
+            socket.close();
+            if (!emitter.isDisposed()) emitter.onNext(received);
+            emitter.isDisposed();
+        }).map(PMSUtil::getIpAddress)
+
+                .flatMap((Function<String, ObservableSource<Boolean>>) s -> Observable.create(emitter -> {
+
+                    InetAddress serverAddr = InetAddress.getByName(s);
+                    Socket socket = new Socket(serverAddr, PMSUtil.DEFAULT_UDP_PORT);
+
+                    OutputStream socketWriter = socket.getOutputStream();
+                    System.out.println("Start sending " + s);
+
+                    socketWriter.write(PMSUtil.getPMSMessage(PMSUtil.getLocalIpAddress()));
+                    socketWriter.flush();
+                    System.out.println("Send completed, start receiving information");
+
+
+                    if (!emitter.isDisposed()) emitter.onNext(true);
+                    emitter.isDisposed();
+
+
+                }))
+
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Boolean>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Boolean s) {
+
+                        Log.e(TAG, "onNext: " + s);
+
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+
+                        Log.e(TAG, "onError: " + e.getMessage());
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
 
     }
 }
