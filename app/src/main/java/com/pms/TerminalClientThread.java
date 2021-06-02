@@ -13,11 +13,11 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class ClientThread implements Runnable {
+public class TerminalClientThread implements Runnable {
 
     private static final String TAG = "ClientThread";
-    private static final String SERVER_IP = "192.168.43.186";
-    private static final int SERVERPORT = 11001;
+    private static final String SERVER_IP = "192.168.43.1";
+    private static final int SERVERPORT = 11002;
     private Socket socket;
 
 
@@ -30,8 +30,8 @@ public class ClientThread implements Runnable {
 
 //            while (!Thread.currentThread().isInterrupted()) {
 //
-//                BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                String message = input.readLine();
+            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String message = input.readLine();
 ////                if (null == message || "Disconnect".contentEquals(message)) {
 ////                    Thread.interrupted();
 ////                    message = "Server Disconnected.";
@@ -48,7 +48,7 @@ public class ClientThread implements Runnable {
 //
 //
 //                String message = stringbuilder.toString();
-//                Log.e(TAG, "run:cli " + message);
+            Log.e(TAG, "run:cli " + message);
 //
 ////                showMessage("Server: " + message, clientTextColor);
 //            }

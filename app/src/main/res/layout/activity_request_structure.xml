@@ -32,10 +32,19 @@
             tools:layout_editor_absoluteX="198dp" />
 
         <Button
+            android:id="@+id/listenTCP"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Listen TCP"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="198dp" />
+
+        <Button
             android:id="@+id/createTerminal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Create Terminal"
+            android:visibility="gone"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="198dp" />
 

@@ -90,8 +90,8 @@ public class RequestStructureActivity extends AppCompatActivity {
         String version = "EVO_12.0.0.3";
         pmsMessage.addField(new PMSField("VR", version));
 
-        ipAddress = "192.168.43.5";
-        String ipPOrt = "11005";
+        ipAddress = PMSUtil.getLocalIpAddress();
+        String ipPOrt = "11002";
         pmsMessage.addField(new PMSField("IA", ipAddress));
         pmsMessage.addField(new PMSField("IP", ipPOrt));
 
@@ -107,9 +107,9 @@ public class RequestStructureActivity extends AppCompatActivity {
         ClientThread clientThread = new ClientThread();
         new Thread(clientThread).start();
 
-
+        EchoServer echoServer = new EchoServer();
         binding.listenUDPServer.setOnClickListener(v -> {
-            ListenUDP echoServer = new ListenUDP();
+//            ListenUDP echoServer = new ListenUDP();
             echoServer.start();
         });
 
@@ -125,6 +125,21 @@ public class RequestStructureActivity extends AppCompatActivity {
 
         binding.createTerminal.setOnClickListener(v -> createTerminal());
 
+
+        binding.listenTCP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                GreetServer greetServer = new GreetServer(11002);
+                greetServer.start();
+
+//                Intent intent=new Intent(RequestStructureActivity.this,TcpServerService.class);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                    startForegroundService(intent);
+//                }else startService(intent);
+
+            }
+        });
 
     }
 

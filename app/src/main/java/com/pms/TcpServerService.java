@@ -1,11 +1,18 @@
 package com.pms;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -24,7 +31,7 @@ public class TcpServerService extends Service {
         Socket socket = null;
 
         try {
-            serverSocket = new ServerSocket(11000);
+            serverSocket = new ServerSocket(11002);
 
             while (working.get()) {
 
@@ -64,7 +71,7 @@ public class TcpServerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
+startForeGround();
         new Thread(runnable).start();
 
     }
@@ -78,7 +85,25 @@ public class TcpServerService extends Service {
 
     private void startForeGround(){
 
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String NOTIFICATION_CHANNEL_ID = "packageName";
+            String channelName = "Tcp Client Background Service";
+            NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, channelName, NotificationManager.IMPORTANCE_NONE);
+            chan.setLightColor(Color.BLUE);
+            chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.createNotificationChannel(chan);
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+            Notification notification = notificationBuilder.setOngoing(true)
+                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                    .setContentTitle("Tcp Client is running in background")
+                    .setPriority(NotificationManager.IMPORTANCE_MIN)
+                    .setCategory(Notification.CATEGORY_SERVICE)
+                    .build();
+            startForeground(2, notification);
+        } else {
+            startForeground(1, new Notification());
+        }
     }
 
     private static final String TAG = "TcpServerService";
