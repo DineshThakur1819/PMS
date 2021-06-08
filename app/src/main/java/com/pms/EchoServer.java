@@ -2,6 +2,8 @@ package com.pms;
 
 import android.util.Log;
 
+import com.pms.pmsmodel.PMSUtil;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -43,6 +45,8 @@ public class EchoServer extends Thread {
                     = new String(packet.getData(), 0, packet.getLength());
 
             Log.e(TAG, "run: " + received);
+            SplitStringAndSave(received);
+
 
             if (received.equals("end")) {
                 running = false;
@@ -55,5 +59,31 @@ public class EchoServer extends Thread {
             }
         }
         socket.close();
+    }
+
+    private void SplitStringAndSave(String received) {
+
+        String HICAPSConnect, laptop, ipPort;
+        String[] separated = received.split("\\+");
+
+        HICAPSConnect = separated[1];
+        laptop = separated[2];
+        ipPort = separated[3];
+
+
+        PMSUtil.getInstance().saveValue(PMSUtil.HICAPS_CONNECT, HICAPSConnect);
+        PMSUtil.getInstance().saveValue(PMSUtil.LAPTOP, laptop);
+        PMSUtil.getInstance().saveValue(PMSUtil.IP_PORT, ipPort);
+
+
+
+
+//        Log.e(TAG, "Separated String " + separated.toString());
+//        for (String w : separated) {
+//            System.out.println("Separated String " + w);
+//
+//
+//        }
+
     }
 }

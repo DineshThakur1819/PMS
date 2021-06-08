@@ -1,5 +1,7 @@
 package com.pms.pmsmodel;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import java.net.Inet4Address;
@@ -12,7 +14,45 @@ import java.util.Enumeration;
 
 public class PMSUtil {
 
-    public static final int DEFAULT_UDP_PORT = 11001;
+    public static final int DEFAULT_UDP_PORT = 11000;
+
+    SharedPreferences pref;
+    SharedPreferences.Editor editor;
+    Context _context;
+    int PRIVATE_MODE = 0;
+    private String APP_PREF_NAME = "asdgjsbdfvbcygefwvtrh";
+    private static Context mContext;
+    private static PMSUtil mInstance;
+
+    public static String HICAPS_CONNECT = "HICAPSConnect";
+    public static String LAPTOP = "laptop";
+    public static String IP_PORT = "ipPort";
+
+
+    public PMSUtil(Context context) {
+        this._context = context;
+        pref = _context.getSharedPreferences(APP_PREF_NAME, PRIVATE_MODE);
+        editor = pref.edit();
+    }
+
+    public static synchronized PMSUtil getInstance() {
+        mContext = PmsApplication.getContext();
+        if (mInstance == null) {
+            mInstance = new PMSUtil(mContext);
+        }
+        return mInstance;
+    }
+
+    public void saveValue(String key, String value) {
+        if (value == null) {
+            editor.putString(key, null);
+        }
+        editor.commit();
+    }
+
+    public String getValue(String PREFS_KEY) {
+        return pref.getString(PREFS_KEY, null);
+    }
 
     public static byte calculateLRC(byte[] bytes) {
         byte LRC = 0;
@@ -87,7 +127,7 @@ public class PMSUtil {
         pmsMessage.addField(new PMSField("VR", version));
 
 //        ipAddress = "192.168.43.5";
-        String ipPOrt = "11002";
+        String ipPOrt = "11001";
         pmsMessage.addField(new PMSField("IA", ipAddress));
         pmsMessage.addField(new PMSField("IP", ipPOrt));
 

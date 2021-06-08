@@ -79,7 +79,7 @@ public class TcpClientService extends Service {
         pmsMessage.addField(new PMSField("VR", version));
 
         String ipAddress = "192.168.43.5";
-        String ipPOrt = "11002";
+        String ipPOrt = "11001";
         pmsMessage.addField(new PMSField("IA", ipAddress));
         pmsMessage.addField(new PMSField("IP", ipPOrt));
 

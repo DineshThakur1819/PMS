@@ -16,7 +16,7 @@ import java.net.UnknownHostException;
 public class ClientThread implements Runnable {
 
     private static final String TAG = "ClientThread";
-    private static final String SERVER_IP = "192.168.43.186";
+    private static final String SERVER_IP = "192.168.43.91";
     private static final int SERVERPORT = 11001;
     private Socket socket;
     private byte[] msg;
