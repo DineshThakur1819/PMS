@@ -18,11 +18,12 @@ import com.pms.pmsmodel.PMSField;
 import com.pms.pmsmodel.PMSMessage;
 import com.pms.pmsmodel.PMSUtil;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,11 +31,9 @@ import java.util.Date;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.annotations.NonNull;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
 import io.reactivex.rxjava3.core.ObservableSource;
 import io.reactivex.rxjava3.core.Observer;
-import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.functions.Function;
 import io.reactivex.rxjava3.schedulers.Schedulers;
@@ -104,20 +103,25 @@ public class RequestStructureActivity extends AppCompatActivity {
 //
 //        Inet4Address inet4Address=new Inet4Address()
 
-        ClientThread clientThread = new ClientThread();
-        new Thread(clientThread).start();
 
         EchoServer echoServer = new EchoServer();
+        echoServer.start();
         binding.listenUDPServer.setOnClickListener(v -> {
 //            ListenUDP echoServer = new ListenUDP();
-            echoServer.start();
+
+            TCPConnectClientThread tcpListen = new TCPConnectClientThread(byteMsg);
+
+            new Thread(tcpListen).start();
+
         });
 
         binding.sendMsgToServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d("PMS Message:", msg);
-                clientThread.sendMessage(byteMsg);
+                ClientThread clientThread = new ClientThread(byteMsg);
+                new Thread(clientThread).start();
+//                clientThread.sendMessage(byteMsg);
 
             }
         });
@@ -126,12 +130,23 @@ public class RequestStructureActivity extends AppCompatActivity {
         binding.createTerminal.setOnClickListener(v -> createTerminal());
 
 
+//        SendAndReceiveClientThread clientThread1 = new SendAndReceiveClientThread();
+
         binding.listenTCP.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                GreetServer greetServer = new GreetServer(11002);
+//                startActivity(new Intent(RequestStructureActivity.this, TCPMessages.class));
+
+                TcpServier greetServer = new TcpServier(11002);
                 greetServer.start();
+
+//                TerminalServer terminalServer=new TerminalServer();
+//                terminalServer.start();
+
+//                EchoServerAnother echoServerAnother = new EchoServerAnother();
+//                echoServerAnother.start();
+
 
 //                Intent intent=new Intent(RequestStructureActivity.this,TcpServerService.class);
 //                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -142,6 +157,28 @@ public class RequestStructureActivity extends AppCompatActivity {
         });
 
     }
+
+//    new Thread(new Runnable() {
+//        @Override
+//        public void run() {
+//            try (ServerSocket serverSocket = new ServerSocket(11003)) {
+//
+//                System.out.println("Server is listening on port " + 11003);
+//
+//                while (true) {
+//                    Socket socket = serverSocket.accept();
+//                    System.out.println("New client connected");
+//
+//                    new ServerThreadTcp(socket).start();
+//                }
+//
+//            } catch (IOException ex) {
+//                System.out.println("Server exception: " + ex.getMessage());
+//                ex.printStackTrace();
+//            }
+//        }
+//    }).start();
+
 
     private void createTerminal() {
 

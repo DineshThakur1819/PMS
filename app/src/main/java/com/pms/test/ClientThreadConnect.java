@@ -1,11 +1,9 @@
-package com.pms;
+package com.pms.test;
 
 import android.util.Log;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -13,15 +11,15 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class ClientThread implements Runnable {
+public class ClientThreadConnect implements Runnable {
 
-    private static final String TAG = "ClientThread";
+    private static final String TAG = "TCP:  ";
     private static final String SERVER_IP = "192.168.43.186";
-    private static final int SERVERPORT = 11001;
+    private static final int SERVERPORT = 11000;
     private Socket socket;
     private byte[] msg;
 
-    public ClientThread(byte[] byteMsg) {
+    public ClientThreadConnect(byte[] byteMsg) {
         this.msg = byteMsg;
     }
 
@@ -35,18 +33,18 @@ public class ClientThread implements Runnable {
             Log.e(TAG, "run: connected " + SERVER_IP + ":" + SERVERPORT);
             Log.e(TAG, "run: " + socket.isConnected());
 
-//            try {
-//                if (null != socket) {
-//                    OutputStream socketWriter = socket.getOutputStream();
-//                    System.out.println("Start sending");
-//
-//                    socketWriter.write(msg);
-//                    socketWriter.flush();
-//                    System.out.println("Send completed, start receiving information");
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                if (null != socket) {
+                    OutputStream socketWriter = socket.getOutputStream();
+                    System.out.println("Start sending");
+
+                    socketWriter.write(msg);
+                    socketWriter.flush();
+                    System.out.println("Send completed, start receiving information");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
         } catch (UnknownHostException e1) {
             e1.printStackTrace();
@@ -75,7 +73,7 @@ public class ClientThread implements Runnable {
         }).start();
     }
 
-    public void sendMessage(final byte[] message) {
+    void sendMessage(final byte[] message) {
         new Thread(new Runnable() {
             @Override
             public void run() {

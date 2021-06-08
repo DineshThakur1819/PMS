@@ -10,7 +10,7 @@ import java.net.SocketException;
 
 public class TerminalServer extends Thread {
 
-    private static final String TAG = "EchoServer";
+    private static final String TAG = "TerminalEchoServer";
     private static final int PORT = 11002;
     private DatagramSocket socket;
     private boolean running;

@@ -2,25 +2,29 @@ package com.pms;
 
 import android.util.Log;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 
 public class EchoServerAnother extends Thread {
 
-    private static final String TAG = "EchoServer";
-    private static final int PORT=11007;
-    private DatagramSocket socket;
+    private static final String TAG = "TCpEchoServer";
+    private static final int PORT = 11002;
+    private ServerSocket socket;
+    private Socket s;
     private boolean running;
     private byte[] buf = new byte[256];
 
     public EchoServerAnother() {
         try {
-            socket = new DatagramSocket(PORT);
-        } catch (SocketException e) {
-            e.printStackTrace();
+            socket = new ServerSocket(PORT);
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -28,32 +32,25 @@ public class EchoServerAnother extends Thread {
         running = true;
 
         while (running) {
-            DatagramPacket packet
-                    = new DatagramPacket(buf, buf.length);
+
             try {
-                socket.receive(packet);
+                s = socket.accept();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            InetAddress address = packet.getAddress();
-            int port = packet.getPort();
-            packet = new DatagramPacket(buf, buf.length, address, port);
-            String received
-                    = new String(packet.getData(), 0, packet.getLength());
 
-            Log.e(TAG, "run: " + received);
-
-            if (received.equals("end")) {
-                running = false;
-                continue;
-            }
             try {
-                socket.send(packet);
-            } catch (IOException e) {
-                e.printStackTrace();
+                DataInputStream din = new DataInputStream(s.getInputStream());
+                String received
+                        = new String(din.readUTF());
+
+                Log.e(TAG, "run: TCP " + received);
+
+            } catch (IOException exception) {
+                exception.printStackTrace();
             }
+
         }
-        socket.close();
     }
 }

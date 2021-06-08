@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
         binding.listenUdp.setOnClickListener(v -> mEchoServer.start());
 
-        ClientThread clientThread = new ClientThread();
+        ClientThread clientThread = new ClientThread(new byte[]{});
 
         binding.sendMsg.setOnClickListener(new View.OnClickListener() {
             @Override

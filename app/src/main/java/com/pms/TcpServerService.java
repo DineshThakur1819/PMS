@@ -126,8 +126,8 @@ startForeGround();
 
                 try {
                     if (dataInputStream.available() > 0) {
-                        Log.i(TAG, "Received: " + dataInputStream.readUTF());
-                        dataOutputStream.writeUTF("Hello Client");
+                        Log.i(TAG, "Received: " + dataInputStream.readLine());
+//                        dataOutputStream.writeUTF("Hello Client");
                         sleep(2000L);
                     }
                 } catch (IOException e) {
